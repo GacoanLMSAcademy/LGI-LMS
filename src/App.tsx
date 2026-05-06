@@ -11,8 +11,15 @@ import {
 import { cn, formatPercent } from './lib/utils';
 import { INITIAL_DATA, MODULE_NAMES, PROGRAMS, RAW_SAMPLES, type TrainerData, type ModuleScore } from './types';
 
+const MODULE_MAPPING: Record<string, string[]> = {
+  TOS: ["MNR", "5R", "QC"],
+  SOS: ["FLOOR", "PAYROLL"],
+  MOS: ["TRAINER"]
+};
+
 export default function App() {
   const [selectedTrainer, setSelectedTrainer] = useState<TrainerData | null>(null);
+  const [activeModuleTab, setActiveModuleTab] = useState<string>('TOS');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProgram, setSelectedProgram] = useState<string>('All');
   const [selectedYear, setSelectedYear] = useState<string>('All');
@@ -290,7 +297,10 @@ export default function App() {
                         <tr 
                           key={trainer.id} 
                           className="group hover:bg-slate-50 transition-all cursor-pointer"
-                          onClick={() => setSelectedTrainer(trainer)}
+                          onClick={() => {
+                            setSelectedTrainer(trainer);
+                            setActiveModuleTab(trainer.program);
+                          }}
                         >
                           <td className="px-6 py-4 whitespace-nowrap text-xs font-bold text-slate-500 uppercase">{trainer.periode}</td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -517,12 +527,32 @@ export default function App() {
 
                   {/* Module Breakdown Table */}
                   <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-                    <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight mb-8 flex items-center gap-3">
-                      <LayoutDashboard className="w-5 h-5 text-indigo-600" />
-                      Module Performance Mapping
-                    </h3>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                      <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight flex items-center gap-3">
+                        <LayoutDashboard className="w-5 h-5 text-indigo-600" />
+                        Module Performance Mapping
+                      </h3>
+                      
+                      <div className="flex bg-slate-50 p-1 rounded-2xl border border-slate-200/50">
+                        {PROGRAMS.map(prog => (
+                          <button
+                            key={prog}
+                            onClick={() => setActiveModuleTab(prog)}
+                            className={cn(
+                              "px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                              activeModuleTab === prog 
+                                ? "bg-white text-indigo-600 shadow-sm ring-1 ring-slate-200" 
+                                : "text-slate-400 hover:text-slate-600"
+                            )}
+                          >
+                            {prog}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     <div className="space-y-6">
-                      {MODULE_NAMES.map(m => (
+                      {MODULE_NAMES.filter(m => MODULE_MAPPING[activeModuleTab].includes(m)).map(m => (
                         <div key={m} className="space-y-2">
                           <div className="flex justify-between items-end text-sm">
                             <span className="font-bold text-slate-700">{m}</span>
