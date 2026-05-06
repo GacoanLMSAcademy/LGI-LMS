@@ -90,7 +90,7 @@ export const INITIAL_DATA: TrainerData[] = [
   },
   {
     id: "2",
-    name: "RIKI RIZKHAN BUDI SANTOSO",
+    name: "FERNANDA PUTRI CRISMONICA",
     periode: "May 26",
     program: "TOS",
     nik: "1036783",
